@@ -1,0 +1,10 @@
+version: "3"
+
+tasks:
+  format: deno fmt ./
+  default:
+    cmds:
+      - task: format
+      # - npm run build
+      # - builder --source-path ./example --build-path target/example/ --base-url https://patrickcrocker.com --serve
+      - builder --source-path ./src --build-path target/site/ --base-url https://patrickcrocker.com --serve

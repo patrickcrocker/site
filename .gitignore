@@ -1,0 +1,6 @@
+# Ignore Builder output directory
+target/
+
+# Ignore example sites
+example/
+jtarchie-site/
