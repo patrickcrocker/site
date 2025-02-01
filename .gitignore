@@ -1,6 +1,5 @@
-# Ignore Builder output directory
-target/
+# Ignore Builder output directory (see Taskfile.yml)
+build/
 
 # Ignore example sites
-example/
-jtarchie-site/
+examples/
