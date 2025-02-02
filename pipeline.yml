@@ -1,0 +1,74 @@
+---
+jobs:
+  - name: build-and-deploy
+    plan:
+      - get: app-repo
+        trigger: true
+      - task: build
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ubuntu
+          inputs:
+            - name: app-repo
+          outputs:
+            - name: task-output
+          run:
+            path: sh
+            args:
+            - -exc
+            - |
+              apt update
+              apt install -y curl
+              ARCH=x86_64
+              TEMP_DIR=$(mktemp -d)
+              DOWNLOAD_URL="https://github.com/jtarchie/builder/releases/latest/download/builder_linux_$ARCH.tar.gz"
+              curl -L "$DOWNLOAD_URL" -o "$TEMP_DIR/builder.tar.gz"
+              tar -xzf "$TEMP_DIR/builder.tar.gz" -C "$TEMP_DIR"
+              install "$TEMP_DIR/builder" /usr/local/bin/builder
+              builder --source-path ./app-repo/src --build-path task-output/site/ --base-url https://patrickcrocker.com
+
+      - put: cloudfoundry
+        params:
+          commands:
+            - command: create-org
+            - command: create-space
+            - command: create-domain
+              domain: patrickcrocker.com
+            - command: push
+              manifest: app-repo/manifest.yml
+              path: task-output/site
+              instances: 2
+              strategy: rolling
+
+resources:
+  - name: app-repo
+    type: git
+    icon: github-circle
+    source:
+      uri: git@github.com:patrickcrocker/site.git
+      branch: main
+      private_key: ((git_key.private_key))
+      ignore_paths:
+        - pipeline.yml
+        - README.md
+
+  - name: cloudfoundry
+    type: cf-cli-resource
+    icon: cloud-upload
+    source:
+      api: https://api.run.nulldriver.com
+      username: ((cf.username))
+      password: ((cf.password))
+      org: apps
+      space: patrickcrocker
+      cf_cli_version: 8
+
+resource_types:
+  - name: cf-cli-resource
+    type: registry-image
+    source:
+      repository: nulldriver/cf-cli-resource
+      tag: latest
