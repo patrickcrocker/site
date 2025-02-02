@@ -5,3 +5,7 @@ applications:
     buildpacks:
       - staticfile_buildpack
     path: build/site
+    routes:
+      - route: site.cfapps.nulldriver.com
+      - route: patrickcrocker.com
+      - route: www.patrickcrocker.com
