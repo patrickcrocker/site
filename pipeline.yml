@@ -1,6 +1,7 @@
 ---
 jobs:
   - name: build-and-deploy
+    public: true
     plan:
       - get: app-repo
         trigger: true
@@ -46,7 +47,7 @@ jobs:
 resources:
   - name: app-repo
     type: git
-    icon: github-circle
+    icon: github
     source:
       uri: git@github.com:patrickcrocker/site.git
       branch: main
