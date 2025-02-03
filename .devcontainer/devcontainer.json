@@ -15,5 +15,8 @@
     "ghcr.io/nulldriver/devcontainer-features/fly-cli:1": {
       "url": "https://ci.nulldriver.com"
     }
-  }
+  },
+  "runArgs": [
+		"-v", "/run/host-services/ssh-auth.sock:/ssh-auth.sock", "-e", "SSH_AUTH_SOCK=/ssh-auth.sock"
+	]
 }
